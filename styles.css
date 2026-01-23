@@ -403,6 +403,157 @@ body {
     box-shadow: var(--shadow-hover);
 }
 
+/* Image Styles */
+.gallery-image,
+.room-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.gallery-image:hover,
+.room-image:hover {
+    transform: scale(1.05);
+}
+
+.room-image {
+    height: 250px;
+    display: block;
+}
+
+.content-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: var(--shadow-hover);
+    cursor: pointer;
+}
+
+/* Lightbox Styles */
+.lightbox {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    overflow: hidden;
+}
+
+.lightbox.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-image {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10000;
+    transition: color 0.3s;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-close:hover {
+    color: var(--accent-color);
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10000;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, transform 0.3s;
+    user-select: none;
+}
+
+.lightbox-nav:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.lightbox-nav.prev {
+    left: 30px;
+}
+
+.lightbox-nav.next {
+    right: 30px;
+}
+
+.lightbox-nav:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+@media (max-width: 768px) {
+    .lightbox-nav {
+        font-size: 30px;
+        width: 50px;
+        height: 50px;
+        padding: 10px;
+    }
+    
+    .lightbox-nav.prev {
+        left: 10px;
+    }
+    
+    .lightbox-nav.next {
+        right: 10px;
+    }
+    
+    .lightbox-close {
+        top: 10px;
+        right: 20px;
+        font-size: 30px;
+        width: 40px;
+        height: 40px;
+    }
+}
+
 /* Rooms Preview */
 .rooms-preview {
     padding: 4rem 0;
@@ -436,6 +587,13 @@ body {
     color: white;
     font-size: 1.3rem;
     font-weight: 600;
+}
+
+.room-card img.room-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
 }
 
 .room-content {
@@ -798,6 +956,15 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
+    justify-items: center;
+}
+
+/* When gallery has only one item, limit its width */
+.gallery-grid:has(.gallery-item:only-child),
+.gallery-grid.gallery-single {
+    grid-template-columns: 1fr;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .gallery-item {
@@ -807,10 +974,35 @@ body {
     overflow: hidden;
     box-shadow: var(--shadow);
     transition: transform 0.3s;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* For single item galleries, use a better aspect ratio */
+.gallery-grid:has(.gallery-item:only-child) .gallery-item,
+.gallery-grid.gallery-single .gallery-item {
+    height: auto;
+    max-width: 800px;
+    aspect-ratio: 16 / 9;
 }
 
 .gallery-item:hover {
     transform: scale(1.05);
+}
+
+/* Ensure images maintain aspect ratio */
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* For single item, use contain instead of cover to avoid stretching */
+.gallery-grid:has(.gallery-item:only-child) .gallery-item img,
+.gallery-grid.gallery-single .gallery-item img {
+    object-fit: contain;
+    height: auto;
 }
 
 .gallery-placeholder {

@@ -75,3 +75,129 @@ window.addEventListener('load', () => {
     });
 });
 
+// Lightbox functionality
+(function() {
+    // Create lightbox HTML structure
+    const lightboxHTML = `
+        <div class="lightbox" id="lightbox">
+            <span class="lightbox-close" id="lightboxClose">&times;</span>
+            <div class="lightbox-nav prev" id="lightboxPrev">&#8249;</div>
+            <div class="lightbox-nav next" id="lightboxNext">&#8250;</div>
+            <div class="lightbox-content">
+                <img class="lightbox-image" id="lightboxImage" src="" alt="">
+            </div>
+        </div>
+    `;
+    
+    // Insert lightbox into body
+    document.body.insertAdjacentHTML('beforeend', lightboxHTML);
+    
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxClose = document.getElementById('lightboxClose');
+    const lightboxPrev = document.getElementById('lightboxPrev');
+    const lightboxNext = document.getElementById('lightboxNext');
+    
+    let currentImages = [];
+    let currentIndex = 0;
+    
+    // Get all gallery images
+    function getAllGalleryImages() {
+        return Array.from(document.querySelectorAll('.gallery-image, .room-image, .content-image img'));
+    }
+    
+    // Open lightbox
+    function openLightbox(index) {
+        currentImages = getAllGalleryImages();
+        currentIndex = index;
+        updateLightboxImage();
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+    
+    // Close lightbox
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+    
+    // Update lightbox image
+    function updateLightboxImage() {
+        if (currentImages.length === 0) return;
+        
+        const img = currentImages[currentIndex];
+        lightboxImage.src = img.src;
+        lightboxImage.alt = img.alt || 'Gallery Image';
+        
+        // Show/hide navigation arrows
+        lightboxPrev.style.display = currentImages.length > 1 ? 'flex' : 'none';
+        lightboxNext.style.display = currentImages.length > 1 ? 'flex' : 'none';
+    }
+    
+    // Navigate to previous image
+    function prevImage() {
+        if (currentImages.length === 0) return;
+        currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+        updateLightboxImage();
+    }
+    
+    // Navigate to next image
+    function nextImage() {
+        if (currentImages.length === 0) return;
+        currentIndex = (currentIndex + 1) % currentImages.length;
+        updateLightboxImage();
+    }
+    
+    // Add click event to all gallery images
+    function initLightbox() {
+        const images = getAllGalleryImages();
+        images.forEach((img, index) => {
+            img.addEventListener('click', (e) => {
+                e.preventDefault();
+                openLightbox(index);
+            });
+        });
+    }
+    
+    // Event listeners
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightboxPrev.addEventListener('click', prevImage);
+    lightboxNext.addEventListener('click', nextImage);
+    
+    // Close on background click
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+            closeLightbox();
+        }
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('active')) return;
+        
+        switch(e.key) {
+            case 'Escape':
+                closeLightbox();
+                break;
+            case 'ArrowLeft':
+                prevImage();
+                break;
+            case 'ArrowRight':
+                nextImage();
+                break;
+        }
+    });
+    
+    // Initialize lightbox when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLightbox);
+    } else {
+        initLightbox();
+    }
+    
+    // Re-initialize when images are loaded (for lazy loading)
+    window.addEventListener('load', () => {
+        setTimeout(initLightbox, 100);
+    });
+})();
+
